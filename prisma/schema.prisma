@@ -33,3 +33,44 @@ enum ChamadoStatus {
   CANCELADO
   REABERTO
 }
+
+
+model Customers {
+  id          String     @id @default(uuid())
+  nome        String
+  email       String     @unique
+  alias       String     
+  cnpj        String     @unique
+  ie          String?
+  telefone    String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  enderecos   Addresses[] 
+  contatos    Contacts[]
+}
+model Contacts {
+  id          String     @id @default(uuid())
+  nome        String
+  email       String     @unique
+  telefone    String
+  clienteId   String  
+  cliente     Customers   @relation(fields: [clienteId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  @@index([clienteId])
+}
+model Addresses {
+  id          String     @id @default(uuid())
+  rua         String
+  numero      String
+  complemento String?    
+  cidade      String
+  estado      String
+  cep         String
+  isMain    Boolean    @default(false)
+  clienteId String  
+  cliente     Customers   @relation(fields: [clienteId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  @@index([clienteId])
+}

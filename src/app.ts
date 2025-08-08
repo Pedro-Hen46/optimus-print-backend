@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 // Rotas do sistema
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
+import customerRoutes from "./routes/customer.routes";
+import contactRoutes from "./routes/contact.routes";
 
 dotenv.config();
 
@@ -13,5 +15,7 @@ app.use(express.json());
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
+app.use("/customer", customerRoutes);
+app.use("/contact", contactRoutes);
 
 export { app };
