@@ -1,24 +1,19 @@
 import { Router } from "express";
 import {
-  login,
-  register,
-} from "../controllers/auth/auth.controller";
-import {
   ensureAuthenticated,
   ensureRole,
 } from "../middlewares/auth.middleware";
+import { deleteUser, getUsers } from "../controllers/user/user.controller";
 
 const router = Router();
 
-//Logar na plataforma
-router.post("/login", login);
-
-//Registrar
-router.post(
-  "/register",
+router.delete(
+  "/:id",
   ensureAuthenticated,
   ensureRole("ADMINISTRADOR"),
-  register
+  deleteUser
 );
+
+router.get("/", ensureAuthenticated, ensureRole("ADMINISTRADOR"), getUsers);
 
 export default router;
