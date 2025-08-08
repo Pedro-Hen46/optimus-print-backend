@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   login,
   register,
+  requestPasswordReset,
 } from "../controllers/auth/auth.controller";
 import {
   ensureAuthenticated,
@@ -12,6 +13,9 @@ const router = Router();
 
 //Logar na plataforma
 router.post("/login", login);
+
+//Recuperar senha
+router.post("/recovery", requestPasswordReset);
 
 //Registrar
 router.post(
