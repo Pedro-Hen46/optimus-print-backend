@@ -5,8 +5,8 @@ const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 
 // Tipagem para o usuário decodificado do JWT
 interface DecodedUser {
-  sub: string; 
-  role: string; 
+  sub: string;
+  role: string;
 }
 
 // Middleware principal de autenticação
@@ -33,9 +33,9 @@ export function ensureAuthenticated(
 }
 
 // Middleware para verificar role (admin, user, etc.)
-export function ensureRole(requiredRole: string) {
+export function ensureRole(...allowedRoles: string[]) {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (req.user?.role !== requiredRole) {
+    if (!req.user?.role || !allowedRoles.includes(req.user.role)) {
       return res
         .status(403)
         .json({ error: "Acesso negado. Permissão insuficiente." });

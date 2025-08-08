@@ -6,13 +6,33 @@ import {
   update,
   remove,
 } from "../controllers/customers/customers.controller";
+import {
+  ensureAuthenticated,
+  ensureRole,
+} from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.post("/", create);
+router.post(
+  "/",
+  ensureAuthenticated,
+  ensureRole("ADMINISTRADOR", "FINANCEIRO"),
+  create
+);
 router.get("/", getAll);
 router.get("/:id", getById);
-router.put("/:id", update);
-router.delete("/:id", remove);
+router.put(
+  "/:id",
+  ensureAuthenticated,
+  ensureRole("ADMINISTRADOR", "FINANCEIRO", "ATENDIMENTO"),
+  update
+);
+
+router.delete(
+  "/:id",
+  ensureAuthenticated,
+  ensureRole("ADMINISTRADOR", "FINANCEIRO"),
+  remove
+);
 
 export default router;
