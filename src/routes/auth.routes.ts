@@ -3,6 +3,7 @@ import {
   login,
   register,
   requestPasswordReset,
+  resetPassword,
 } from "../controllers/auth/auth.controller";
 import {
   ensureAuthenticated,
@@ -16,6 +17,8 @@ router.post("/login", login);
 
 //Recuperar senha
 router.post("/recovery", requestPasswordReset);
+//Enviar nova senha depois de recuperar um token
+router.post("/recovery/new-password", resetPassword);
 
 //Registrar
 router.post(

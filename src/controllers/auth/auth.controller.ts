@@ -22,6 +22,7 @@ import {
   invalidateResetToken,
   updateUserPassword,
 } from "../../repositories/passwordReset.repository";
+import { ZodError } from "zod";
 
 export const login = async (req: Request, res: Response) => {
   const result = loginSchema.safeParse(req.body);
@@ -89,7 +90,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     // 3. Gerar token único
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // 4. Criar registro no banco (expira em 10 minutos)
+    // 4. Criar registro no banco (expira em 5 minutos)
     await createPasswordResetToken({
       userId: user.id,
       token: resetToken,
@@ -98,23 +99,22 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     // 5. Preparar mensagem WhatsApp
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&userId=${user.id}`;
 
-    const message =
-      `Olá ${user.name}, você solicitou a recuperação de senha do sistema.\n\n` +
-      `Por favor, clique no link abaixo para redefinir sua senha:\n${resetLink}\n\n` +
-      `⚠️ Atenção: Este link expirará em em breve, *seja rápido*!`;
+    const message = `Olá *${user.name}*, você solicitou a recuperação de senha do sistema.\n\n
+      Por favor, clique no link abaixo para redefinir sua senha:\n${resetLink}\n\n
+      ⚠️ Atenção: Este link expirará em em breve, *seja rápido*!`;
+
+    const formattedMessage = message
+      .replace(/\\/g, "\\\\") // Escapa barras invertidas existentes
+      .replace(/\n/g, "\\n") // Escapa quebras de linha
+      .replace(/\"/g, '\\"'); // Escapa aspas
 
     // 6. Enviar para o webhook do n8n (WhatsApp)
     await axios.post(
-      // process.env.N8N_WEBHOOK_URL ||
-      //   "https://n8n.novaservices.com.br/webhook/fusion",
-      "https://n8n.novaservices.com.br/webhook-test/fusion",
-
-      {
-        data: {
-          number: user.telefone.replace(/\D/g, ""), // Remove não-dígitos
-          message: message,
-        },
-      },
+      process.env.N8N_PASSWORD_RESET_WEBHOOK || "",
+      JSON.stringify({
+        number: String(user.telefone.replace(/\D/g, "")),
+        message: String(formattedMessage),
+      }),
       {
         headers: {
           "Content-Type": "application/json",
@@ -128,12 +128,10 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error("Password reset request error:", error);
-    return res
-      .status(500)
-      .json({
-        error:
-          "Erro ao processar solicitação, possivel problema com o sistema de automação",
-      });
+    return res.status(500).json({
+      error:
+        "Erro ao processar solicitação, possivel problema com o sistema de automação",
+    });
   }
 };
 
@@ -162,9 +160,23 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: "Senha redefinida com sucesso",
     });
   } catch (error) {
-    console.error("Password reset error:", error);
+    // Tratamento para ZodError
+    if (error instanceof ZodError) {
+      return res.status(400).json(error.issues.map((issue) => issue.message));
+    }
+
+    // Tratamento para outros erros
+    if (error instanceof Error) {
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Erro ao redefinir senha",
+      });
+    }
+
+    // Fallback para erros desconhecidos
     return res.status(500).json({
-      error: "Erro ao redefinir senha",
+      success: false,
+      error: "Erro desconhecido ao redefinir senha",
     });
   }
 };

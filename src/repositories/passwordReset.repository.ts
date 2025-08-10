@@ -10,7 +10,7 @@ export async function createPasswordResetToken(
     userId: string;
   }
 ) {
-  const expiresAt = addMinutes(new Date(), 10);
+  const expiresAt = addMinutes(new Date(), 5);
 
   return prisma.passwordResetToken.create({
     data: {
