@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.routes";
 import customerRoutes from "./routes/customer.routes";
 import contactRoutes from "./routes/contact.routes";
 import addressRoutes from "./routes/address.routes";
+import masterTableRoutes from "./routes/masterTable.routes";
 
 dotenv.config();
 
@@ -19,5 +20,6 @@ app.use("/user", userRoutes);
 app.use("/customer", customerRoutes);
 app.use("/contact", contactRoutes);
 app.use("/address", addressRoutes);
+app.use("/master-table", masterTableRoutes);
 
 export { app };

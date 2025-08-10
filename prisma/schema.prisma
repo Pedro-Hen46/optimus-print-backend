@@ -49,6 +49,17 @@ enum ChamadoStatus {
   CANCELADO
   REABERTO
 }
+// Modelo para armazenar informações de modelos de impressoras, peças, etc.
+model MasterTable {
+  id          String     @id @default(uuid())
+  model        String
+  description   String
+  type        String
+  observation String?
+  value       Decimal?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
 
 
 model Customers {
