@@ -97,7 +97,7 @@ export const requestPasswordReset = async (req: Request, res: Response) => {
     });
 
     // 5. Preparar mensagem WhatsApp
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&userId=${user.id}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}&acess=${user.id}`;
 
     const message = `Olá *${user.name}*, você solicitou a recuperação de senha do sistema.\n\n
       Por favor, clique no link abaixo para redefinir sua senha:\n${resetLink}\n\n

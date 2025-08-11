@@ -101,3 +101,11 @@ model Addresses {
   updatedAt   DateTime   @updatedAt
   @@index([clienteId])
 }
+
+
+model UploadedFile {
+  id        String   @id @default(uuid())
+  fileKey   String   
+  mimeType  String?  
+  createdAt DateTime @default(now())
+}
