@@ -1,15 +1,28 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-const secret: string = process.env.JWT_SECRET || 'devsecret';
+// Carrega variáveis de ambiente
+dotenv.config();
 
-export const generateToken = (payload: object, expiresIn = '15m') => {
-     if (!secret) {
-         throw new Error('JWT_SECRET não definido');
-     }
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
 
-     return jwt.sign(payload, secret, { expiresIn });
+if (!JWT_SECRET) {
+  throw new Error("❌ JWT_SECRET não definido no arquivo .env");
+}
+
+export const generateToken = (
+  payload: object,
+  expiresIn: string = JWT_EXPIRES_IN
+) => {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn,
+    algorithm: "HS256",
+  });
 };
 
 export const verifyToken = (token: string) => {
-  return jwt.verify(token, secret);
+  return jwt.verify(token, JWT_SECRET, {
+    algorithms: ["HS256"],
+  });
 };

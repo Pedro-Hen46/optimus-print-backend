@@ -8,6 +8,7 @@ import customerRoutes from "./routes/customer.routes";
 import contactRoutes from "./routes/contact.routes";
 import addressRoutes from "./routes/address.routes";
 import masterTableRoutes from "./routes/masterTable.routes";
+import { ensureAuthenticated } from "./middlewares/auth.middleware";
 
 dotenv.config();
 
@@ -16,6 +17,11 @@ const app = express();
 app.use(express.json());
 
 app.use("/auth", authRoutes);
+
+
+// Aplica o middleware para todas as rotas abaixo
+app.use(ensureAuthenticated);
+
 app.use("/user", userRoutes);
 app.use("/customer", customerRoutes);
 app.use("/contact", contactRoutes);
