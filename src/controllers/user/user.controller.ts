@@ -68,8 +68,6 @@ export async function deleteUser(req: Request, res: Response) {
     // 1. Verifica se o usuário existe
     const userExists = await getUserById(userId);
 
-    console.log(userExists, userId);
-
     if (!userExists) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }

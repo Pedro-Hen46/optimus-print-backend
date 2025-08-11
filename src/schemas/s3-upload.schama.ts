@@ -6,10 +6,10 @@ export const FileUploadSchema = z.object({
   mimetype: z
     .string()
     .regex(
-      /^image\/(jpeg|jpg|png|webp|tiff)$/,
+      /^image\/(jpeg|jpg|png|webp|tiff|jfif)$/,
       "Formato de arquivo inválido. Use JPEG, PNG, WebP ou TIFF."
     ),
-  size: z.number().max(5 * 1024 * 1024, "Arquivo deve ter no máximo 5MB"),
+  size: z.number().max(10 * 1024 * 1024, "Arquivo deve ter no máximo 5MB"),
 });
 
 export const MultipleFileUploadSchema = z.array(FileUploadSchema);

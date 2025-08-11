@@ -6,7 +6,11 @@ export const MasterTableCreateSchema = z.object({
   description: z.string().min(1, "Description é obrigatória"),
   type: z.string().min(1, "Type é obrigatório"),
   observation: z.string().optional(),
-  value: z.number().optional(),
+  value: z.preprocess(
+    (val) => (typeof val === "string" ? parseFloat(val) : val),
+    z.number()
+  ),
+  imageId: z.string().uuid("ID da imagem inválido"),
 });
 
 // Schema para atualização

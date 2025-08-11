@@ -2,10 +2,12 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
+import { prisma } from "../lib/prisma";
 
 const s3Client = new S3Client({
   region: process.env.MINIO_REGION,
@@ -88,5 +90,27 @@ export async function getSignedFileUrl(fileKey: string): Promise<string> {
     return signedUrl;
   } catch (err) {
     throw new Error(`Erro ao gerar URL assinada para ${fileKey}: ${err}`);
+  }
+}
+
+export async function deleteUploadedFile(fileId: string): Promise<void> {
+  if (!fileId) return;
+
+  try {
+    // 1. Primeiro deleta do S3/MinIO
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: fileId, // Assumindo que fileId é a chave do arquivo no S3
+    });
+
+    await s3Client.send(deleteCommand);
+
+    // 2. Depois deleta do banco de dados
+    await prisma.uploadedFile.delete({
+      where: { id: fileId },
+    });
+  } catch (err) {
+    console.error(`Erro ao deletar arquivo ${fileId}:`, err);
+    // Não lança erro para não interromper o fluxo principal
   }
 }

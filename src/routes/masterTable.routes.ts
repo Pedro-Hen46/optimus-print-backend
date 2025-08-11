@@ -1,4 +1,7 @@
 import { Router } from "express";
+
+import multer from "multer";
+
 import {
   create,
   getAll,
@@ -8,9 +11,12 @@ import {
   getByType,
 } from "../controllers/masterTable/masterTable.controller";
 
+// Configuração do Multer para lidar com uploads de arquivos
+const upload = multer({ storage: multer.memoryStorage() });
+
 const router = Router();
 
-router.post("/", create);
+router.post("/", upload.single("file"), create);
 router.get("/", getAll);
 router.get("/:id", getById);
 router.put("/:id", update);
