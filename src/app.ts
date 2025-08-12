@@ -9,6 +9,7 @@ import contactRoutes from "./routes/contact.routes";
 import addressRoutes from "./routes/address.routes";
 import masterTableRoutes from "./routes/masterTable.routes";
 import uploadRoutes from "./routes/s3-upload.route";
+import stockPrinterRoutes from "./routes/stock-printer.routes";
 import { ensureAuthenticated } from "./middlewares/auth.middleware";
 
 dotenv.config();
@@ -28,5 +29,6 @@ app.use("/contact", contactRoutes);
 app.use("/address", addressRoutes);
 app.use("/master-table", masterTableRoutes);
 app.use("/upload", uploadRoutes);
+app.use("/stock-printer", stockPrinterRoutes);
 
 export { app };
